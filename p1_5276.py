@@ -104,9 +104,9 @@ plt.show()
 medianNumRatings = ratings_per_user.median()
 print(string, '\n', "\nMedian of the number of ratings\n", medianNumRatings)
 users_numRatingsGreaterOrEqualTo_medianNumRatings = data.groupby('user_id')['rating'].count() >= medianNumRatings
-#print("DF of people who do and don't exceed or meet the median (True / False)\n",  users_numRatingsGreaterOrEqualTo_medianNumRatings)
-users_AND_greaterEqual_2_medianNumRatings = pd.DataFrame(ratings_per_user[ratings_per_user > medianNumRatings])
-print("\nUsers AND greaterorequal to median number of ratings:\n")
+#print("DF of people who do and don't exceed or meet the median (True / False)\n",  users_numRatingsGreaterOrEqualTo_medianNumRatings) #debug
+users_AND_greaterEqual_2_medianNumRatings = (ratings_per_user[ratings_per_user > medianNumRatings])
+print("\nChart of Users with/including ratings greaterorequal to median number of ratings:\n")
 print(users_AND_greaterEqual_2_medianNumRatings)
 print("\nNumber of users whose number of ratings are greater or equal to the Median of the number of ratings\n", len(users_AND_greaterEqual_2_medianNumRatings.index))
 
@@ -114,17 +114,17 @@ print("\nNumber of users whose number of ratings are greater or equal to the Med
 ### Show the top ten movies with title and genres rated by each user from (1) ###
 print(string, '\n')
 users_from_usersANDmedianRatings = pd.DataFrame(users_AND_greaterEqual_2_medianNumRatings.index.tolist(), columns=['user_id']) # Makes a DF of a single column 'user_id'
-#print("\nThe users:\n", users_from_usersANDmedianRatings)
-#print("Making sure ratings is good to merge:::::\n", pd.DataFrame(ratingsdata[['user_id', 'movie_id', 'rating']]))
+#print("\nThe users:\n", users_from_usersANDmedianRatings) #Debug
+#print("Making sure ratings is good to merge:::::\n", pd.DataFrame(ratingsdata[['user_id', 'movie_id', 'rating']])) #Debug
 selectUsers_and_movie_stuff = pd.merge(pd.merge(users_from_usersANDmedianRatings,
                               pd.DataFrame(ratingsdata[['user_id', 'movie_id', 'rating']])), moviesdata)
-#print("\nDoes the merge work?\n", selectUsers_and_movie_stuff)
+#print("\nDoes the merge work?\n", selectUsers_and_movie_stuff) #Debug
 topTen = (selectUsers_and_movie_stuff.nlargest(10, 'rating'))
-print("\nTop ten movies with title and genres?\n", topTen)
+print("\nTop ten movies with title and genres from users from(1)?\n", topTen)
 
 
 ### Show the average rating per genra for each user from (1)
 print(string, '\n')
-something = pd.merge(pd.DataFrame(selectUsers_and_movie_stuff).index.tolist(), data)
-#avg_ratings = something.pivot_table('rating', index=['movie_id', 'genres'], aggfunc= 'mean')
-#print("AVG ratings: \n", avg_ratings)
+something = pd.merge(pd.DataFrame(users_from_usersANDmedianRatings[['user_id']]), data[['user_id', 'genres', 'rating']])
+avg_ratings = something.pivot_table('rating', index=['user_id', 'genres'], aggfunc= 'mean')
+print("Average rating per genra for each user from (1): \n", avg_ratings)
