@@ -7,12 +7,21 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 string = '---------------------------------------------------------------------------------'
+def get_digit(s):
+    """ extracting digits in a string and joining them into a string"""
+
+    return ''.join([i for i in s if i.isdigit()])
+
+
 def get_year(str_list):
     s = [i.replace('(', '').replace(')', '') for i in str_list]
     s2 = [i.split() for i in s]
-    y_list = [list(filter(lambda x: x.isdigit() and len(x) == 4, i)) for i in s2]
 
-    return [int(i[0]) if len(i) > 0 else np.nan for i in y_list]
+    # check the last string i[-1] in each list of strings,
+    # if it is not a digit sequence then trying to extract digits
+    y_list = [i[-1] if i[-1].isdigit() and len(i[-1]) == 4 else get_digit(i[-1]) for i in s2]
+
+    return pd.Series([int(i) if len(i) > 0 else np.nan for i in y_list])
 
 # Make display smaller
 pd.options.display.max_rows = 10
